@@ -1,0 +1,38 @@
+export enum RegisterType {
+  EMAIL = 'EMAIL',
+  APPLE = 'APPLE',
+  APPLET = 'APPLET',
+  GOOGLE = 'GOOGLE',
+  PHONE = 'PHONE',
+}
+
+export enum LoginType {
+  ACCOUNT = 'ACCOUNT',
+  APPLE = 'APPLE',
+  APPLET = 'APPLET',
+  GOOGLE = 'GOOGLE',
+}
+
+export enum ErrorType {
+  TOKEN_INVALID = 10001,
+  PARAMS_INVALID = 10002,
+  FREQUENT_REQUESTS = 10003,
+  REGISTERED = 10004,
+  EMAIL_ERROR = 10005,
+  ACCOUNT_PASSWORD_ERROR = 10006,
+  CODE_INVALID = 10007,
+}
+
+export enum GetCodeType {
+  EMAIL = 'EMAIL',
+  PHONE = 'PHONE',
+}
+
+export enum CodeType {
+  LOGIN = 'LOGIN',
+  REGISTER = 'REGISTER',
+  FORGOT_PASSWORD = 'FORGOT_PASSWORD',
+  CHANGE_EMAIL = 'CHANGE_EMAIL',
+  CHANGE_PHONE = 'CHANGE_PHONE',
+  UPDATE_PASSWORD = 'UPDATED_PASSWORD',
+}
