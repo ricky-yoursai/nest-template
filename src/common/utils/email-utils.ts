@@ -115,22 +115,22 @@ export class MailUtil {
       "onclick=\"this.style.background='linear-gradient(90deg, #6366F1, #4F46E5)'; setTimeout(()=>this.style.background='linear-gradient(90deg, #4F46E5, #6366F1)', 300);\">" +
       "<div style='background: white; color: #4F46E5; font-weight: 900; font-size: 20px; padding: 6px 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: all 0.3s ease;'" +
       'onmouseover="this.style.transform=\'rotate(10deg)\';"' +
-      'onmouseout="this.style.transform=\'rotate(0deg)\';">S</div>' +
-      "<div style='letter-spacing: 1px;'>hare<span style='color: #FACC15;'>Card</span></div>" +
+      'onmouseout="this.style.transform=\'rotate(0deg)\';">Y</div>' +
+      "<div style='letter-spacing: 1px;'>Yours<span style='color: #FACC15;'>AI</span></div>" +
       '</div>' +
       "<div style='background: white; padding: 30px; border-radius: 12px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);'>" +
       "<h2 style='color: #4F46E5; margin-top: 0;'>您好！</h2>" +
-      "<p style='font-size: 16px; line-height: 1.6; color: #333;'>感谢您使用ShareCard服务。以下是您的验证码：</p>" +
+      "<p style='font-size: 16px; line-height: 1.6; color: #333;'>感谢您使用YoursAI服务。以下是您的验证码：</p>" +
       "<div style='background: #F3F4F6; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;'>" +
       "<span style='font-size: 28px; font-weight: bold; letter-spacing: 2px; color: #4F46E5;'>" +
       code +
       '</span>' +
       '</div>' +
-      "<p style='font-size: 16px; line-height: 1.6; color: #666;'>请在 <span style='font-weight: bold; color: #4F46E5;'>5分钟</span> 内使用此验证码完成验证。</p>" +
+      "<p style='font-size: 16px; line-height: 1.6; color: #666;'>请在 <span style='font-weight: bold; color: #4F46E5;'>2分钟</span> 内使用此验证码完成验证。</p>" +
       "<p style='font-size: 14px; color: #999; margin-top: 30px;'>如非本人操作，请忽略此邮件。请勿将验证码透露给他人。</p>" +
       '</div>' +
       "<div style='text-align: center; margin-top: 30px; color: #999; font-size: 12px;'>" +
-      '<p>© 2026 ShareCard 团队. 保留所有权利.</p>' +
+      '<p>© 2026 YoursAI 团队. 保留所有权利.</p>' +
       '</div>' +
       '</div>'
     );

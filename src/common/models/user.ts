@@ -76,7 +76,7 @@ export class User extends Model<User> {
     }
     // 加密密码 没有传入密码就使用env的DEFAULT_PASSWORD
     if (!instance.password) {
-      instance.password = process.env.DEFAULT_PASSWORD ?? 'ShareCard12345';
+      instance.password = process.env.DEFAULT_PASSWORD ?? 'Yoursai12345';
     }
     if (instance.changed('password')) {
       instance.password = await bcrypt.hash(instance.password, 10);

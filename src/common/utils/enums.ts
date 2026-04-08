@@ -11,6 +11,7 @@ export enum LoginType {
   APPLE = 'APPLE',
   APPLET = 'APPLET',
   GOOGLE = 'GOOGLE',
+  CODE = 'CODE', // 验证码登陆
 }
 
 export enum ErrorType {

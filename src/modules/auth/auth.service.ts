@@ -29,7 +29,7 @@ export class AuthService {
   private redis = getRedisUtil();
   private readonly logger = new Logger(AuthService.name);
   /** 验证码有效期（秒） */
-  private static readonly CODE_TTL = 300;
+  private static readonly CODE_TTL = 120;
 
   constructor(
     private readonly jwtService: JwtService,
@@ -41,8 +41,10 @@ export class AuthService {
     const type = loginDto.type;
     const account = loginDto.account;
     const password = loginDto.password;
+    const loginCode = loginDto.code;
     switch (type) {
       case LoginType.ACCOUNT: {
+        // 帐号密码登陆
         const user = await User.findOne({
           where: {
             [Op.or]: [{ email: account }, { phone: account }],
@@ -67,6 +69,37 @@ export class AuthService {
       }
       case LoginType.APPLET: {
       }
+      case LoginType.CODE: {
+        if (!account) {
+          throw new CustomError(ErrorType.PARAMS_INVALID, 'The account cannot be empty', 401);
+        }
+        const accountType = account.includes('@') ? 'EMAIL' : 'PHONE';
+        if (!loginCode) {
+          throw new CustomError(ErrorType.PARAMS_INVALID, 'The code cannot be empty', 401);
+        }
+        const code = await this.redis.get(`code:${CodeType.LOGIN}:${account}`);
+        if (!code || code !== loginCode) {
+          throw new CustomError(ErrorType.CODE_INVALID, 'The code is invalid', 401);
+        }
+        let user = await User.findOne({ where: { email: account } });
+        if (!user) {
+          const registerUser = await User.create({
+            email: account,
+            username: account.split('@')[0] ?? 'user',
+            password: process.env.DEFAULT_PASSWORD ?? 'Yoursai12345',
+            accountType: accountType,
+          } as User);
+          user = registerUser;
+        }
+        const token = this.generateToken(user, jui);
+        await this.tokenToRedis(token, user, jui);
+        const safeUser = Tool.handlerNeedDeleteKey(user);
+        this.redis.del(`code:${CodeType.LOGIN}:${account}`);
+        return {
+          token: token,
+          user: safeUser,
+        };
+      }
     }
   }
   public async register(registerDto: RegisterDto) {
@@ -79,7 +112,13 @@ export class AuthService {
         if (!account) {
           throw new CustomError(ErrorType.PARAMS_INVALID, 'The account cannot be empty', 401);
         }
-
+        if (!registerDto.code) {
+          throw new CustomError(ErrorType.PARAMS_INVALID, 'The code cannot be empty', 401);
+        }
+        const code = await this.redis.get(`code:${CodeType.REGISTER}:${account}`);
+        if (!code || code !== registerDto.code) {
+          throw new CustomError(ErrorType.CODE_INVALID, 'The code is invalid', 401);
+        }
         const user = await User.findOne({ where: { email: account } });
         if (user) {
           throw new CustomError(ErrorType.REGISTERED, 'This email address is already registered', 401);
@@ -94,7 +133,7 @@ export class AuthService {
         token = this.generateToken(registerUser, jui);
         await this.tokenToRedis(token, registerUser, jui);
         safeUser = Tool.handlerNeedDeleteKey(registerUser);
-        this.redis.del(`code:register:${account}`);
+        this.redis.del(`code:${CodeType.REGISTER}:${account}`);
         break;
       }
       case RegisterType.PHONE: {
@@ -141,10 +180,15 @@ export class AuthService {
     await this.handleFrequentRequest(key);
     await this.redis.set(key, code, AuthService.CODE_TTL);
 
-    if (getType === GetCodeType.EMAIL) {
-      await this.sendEmailCode(type, account, code);
-    } else {
-      await this.sendPhoneCode(type, account, code);
+    try {
+      if (getType === GetCodeType.EMAIL) {
+        await this.sendEmailCode(type, account, code);
+      } else {
+        await this.sendPhoneCode(type, account, code);
+      }
+    } catch (error) {
+      await this.redis.del(key);
+      throw error;
     }
   }
 
@@ -221,14 +265,14 @@ export class AuthService {
 
   private getCodeEmailSubject(type: CodeType): string {
     const titles: Partial<Record<CodeType, string>> = {
-      [CodeType.REGISTER]: '[ShareCard] 注册验证码',
-      [CodeType.LOGIN]: '[ShareCard] 登录验证码',
-      [CodeType.FORGOT_PASSWORD]: '[ShareCard] 找回密码验证码',
-      [CodeType.CHANGE_EMAIL]: '[ShareCard] 更换邮箱验证码',
-      [CodeType.CHANGE_PHONE]: '[ShareCard] 更换手机验证码',
-      [CodeType.UPDATE_PASSWORD]: '[ShareCard] 修改密码验证码',
+      [CodeType.REGISTER]: '[YoursAI] 注册验证码',
+      [CodeType.LOGIN]: '[YoursAI] 登录验证码',
+      [CodeType.FORGOT_PASSWORD]: '[YoursAI] 找回密码验证码',
+      [CodeType.CHANGE_EMAIL]: '[YoursAI] 更换邮箱验证码',
+      [CodeType.CHANGE_PHONE]: '[YoursAI] 更换手机验证码',
+      [CodeType.UPDATE_PASSWORD]: '[YoursAI] 修改密码验证码',
     };
-    return titles[type] ?? '[ShareCard] 验证码';
+    return titles[type] ?? '[YoursAI] 验证码';
   }
 
   private async sendPhoneCode(_type: CodeType, account: string, _code: string) {
@@ -237,6 +281,8 @@ export class AuthService {
   }
 
   private generateToken(user: User, jui: string) {
+    console.log(this.configService.get('TOKEN_EXPIRATION_TIME'));
+    
     return this.jwtService.sign(
       {
         sub: user.id,

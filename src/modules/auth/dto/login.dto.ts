@@ -11,6 +11,12 @@ export class LoginDto {
   account: string;
 
   @IsString()
-  @MinLength(1)
-  password: string;
+  // @MinLength(1)
+  @IsOptional()
+  password?: string;
+
+  @IsString()
+  // @MinLength(1)
+  @IsOptional()
+  code?: string;
 }
