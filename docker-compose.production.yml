@@ -1,0 +1,23 @@
+services:
+  api:
+    image: yoursai/common-auth:latest
+    container_name: common-auth-production
+    environment:
+      NODE_ENV: production
+      PORT: 8001
+      DB_HOST: 156.226.177.66
+      DB_PORT: 3366
+      DB_USERNAME: gg
+      DB_PASSWORD: "666666"
+      DB_DATABASE: auth
+      REDIS_HOST: 127.0.0.1
+      REDIS_PORT: 6380
+      REDIS_PASSWORD: yoursai90803
+      REDIS_DB: 0
+      JWT_SECRET: SHARE_CARD_GOOD
+      TOKEN_EXPIRATION_TIME: 30d
+      DEFAULT_PASSWORD: Yoursai12345
+      IS_ONLY_SINGLE_USER_SIGN: false
+    ports:
+      - "8001:8001"
+    restart: unless-stopped

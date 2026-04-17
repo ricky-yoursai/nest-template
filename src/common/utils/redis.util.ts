@@ -22,6 +22,7 @@ export class RedisUtil {
   private prefix: string;
 
   constructor(options: RedisOptions = {}) {
+    console.log("REDIS_HOST: ", process.env.REDIS_HOST);
     this.client = new Redis({
       host: options.host ?? process.env.REDIS_HOST ?? '127.0.0.1',
       port: options.port ?? parseInt(process.env.REDIS_PORT ?? '6379', 10),
